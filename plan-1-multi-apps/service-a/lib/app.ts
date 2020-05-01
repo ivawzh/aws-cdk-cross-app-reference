@@ -9,7 +9,7 @@ export function buildApp(): cdk.App {
 
   const infrastructure = buildInfrastructureApp()
 
-  const sqsStack  = <SqsStack> infrastructure.node.findChild('SqsStack')
+  const sqsStack = <SqsStack> infrastructure.node.findChild('SqsStack')
 
   new TopicStack(app, 'ServiceAStack', {
     queue: sqsStack.queue,

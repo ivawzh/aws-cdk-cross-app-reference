@@ -1,8 +1,10 @@
 # cdk-playground
 
-WIP example of cross-cdk-app-repo importing.
+Example of cross-cdk-app-repo importing.
 
 This is a spike of idea described in https://github.com/aws/aws-cdk/issues/7721
+
+## Plan 1 - multiple CDK apps
 
 At the moment, infrastructure deployments works as expected. Service-A deployment throws error:
 
@@ -19,3 +21,17 @@ Error: Cannot reference across apps. Consuming and producing stacks must be defi
     at App.synth (./infrastructure/node_modules/@aws-cdk/core/lib/app.ts:142:36)
     at process.<anonymous> (./infrastructure/node_modules/@aws-cdk/core/lib/app.ts:121:45)
 ```
+
+## Plan 2 - CDK app injection
+
+One CDK app, multiple registers.
+Each individual repo has its own register. Register provisions one or more stacks.
+
+All deployments work 🤟
+
+Downsides:
+
+1. service repo can deploy stack from infrastructure repo, e.g. `cdk deploy SqsStack` while I am at service repo.
+2. have to publish provider and re-npm-install at consumer to keep things up-to-date.
+
+These downsides could be mitigated by npm script, e.g. `"deploy": "npm install && cdk deploy TopicStack"`.

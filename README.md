@@ -31,7 +31,7 @@ All deployments work 🤟
 
 Downsides:
 
-1. service repo can deploy stack from infrastructure repo, e.g. `cdk deploy SqsStack` while I am at service repo.
+1. service repo can deploy stack from infrastructure repo, e.g. `cdk deploy SqsStack` while I am at service repo. Cannot use `  Tag.add(app, 'project', projectName); Tag.add(app, 'app', appName)` in consumer stacks, because that will apply the tag name to all shared infra stacks.
 2. have to publish provider and re-npm-install at consumer to keep things up-to-date.
 
-These downsides could be mitigated by npm script, e.g. `"deploy": "npm install && cdk deploy TopicStack"`.
+These downsides could be slightly mitigated by npm script, e.g. `"deploy": "npm install && cdk deploy TopicStack"`.

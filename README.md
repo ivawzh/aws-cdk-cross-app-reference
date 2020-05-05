@@ -8,7 +8,7 @@ This is a spike of idea described in https://github.com/aws/aws-cdk/issues/7721
 
 At the moment, infrastructure deployments works as expected. Service-A deployment throws error:
 
-```log
+    ```log
 Error: Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.
     at resolveValue (./infrastructure/node_modules/@aws-cdk/core/lib/private/refs.ts:48:11)
     at Object.resolveReferences (./infrastructure/node_modules/@aws-cdk/core/lib/private/refs.ts:29:24)
@@ -20,7 +20,7 @@ Error: Cannot reference across apps. Consuming and producing stacks must be defi
     at Function.synth (./infrastructure/node_modules/@aws-cdk/core/lib/construct-compat.ts:231:22)
     at App.synth (./infrastructure/node_modules/@aws-cdk/core/lib/app.ts:142:36)
     at process.<anonymous> (./infrastructure/node_modules/@aws-cdk/core/lib/app.ts:121:45)
-```
+    ```
 
 ## Plan 2 - CDK app injection
 
@@ -42,16 +42,16 @@ Downsides:
 
 3. **The unbearable disadvantage** - when update infrastructure repo, because provider repo doesn't have informatin from consumer repos, it will remove features added by consumer repos. 
 
-Example, security group mutated by consumer repos will get RESET when provider repo re-deploy 😑
+    Example, security group where was mutated by consumer repos will get undesirable RESET when provider repo re-deploys 😑
 
 ```log
-Security Group Changes
-┌───┬────────────────────────────────────────┬─────┬─────────────┬────────────────────┐
-│   │ Group                                  │ Dir │ Protocol    │ Peer               │
-├───┼────────────────────────────────────────┼─────┼─────────────┼────────────────────┤
-│ - │ ${PublicRootALB/SecurityGroup.GroupId} │ In  │ TCP 80      │ Everyone (IPv4)    │
-│ - │ ${PublicRootALB/SecurityGroup.GroupId} │ In  │ TCP 443     │ Everyone (IPv4)    │
-├───┼────────────────────────────────────────┼─────┼─────────────┼────────────────────┤
-│ + │ ${PublicRootALB/SecurityGroup.GroupId} │ Out │ ICMP 252-86 │ 255.255.255.255/32 │
-└───┴────────────────────────────────────────┴─────┴─────────────┴────────────────────┘
+    Security Group Changes
+    ┌───┬────────────────────────────────────────┬─────┬─────────────┬────────────────────┐
+    │   │ Group                                  │ Dir │ Protocol    │ Peer               │
+    ├───┼────────────────────────────────────────┼─────┼─────────────┼────────────────────┤
+    │ - │ ${PublicRootALB/SecurityGroup.GroupId} │ In  │ TCP 80      │ Everyone (IPv4)    │
+    │ - │ ${PublicRootALB/SecurityGroup.GroupId} │ In  │ TCP 443     │ Everyone (IPv4)    │
+    ├───┼────────────────────────────────────────┼─────┼─────────────┼────────────────────┤
+    │ + │ ${PublicRootALB/SecurityGroup.GroupId} │ Out │ ICMP 252-86 │ 255.255.255.255/32 │
+    └───┴────────────────────────────────────────┴─────┴─────────────┴────────────────────┘
 ```

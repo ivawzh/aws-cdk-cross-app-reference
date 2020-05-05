@@ -1,10 +1,10 @@
-# cdk-playground
+# aws-cdk-cross-app-reference
 
-Example of cross-cdk-app-repo importing.
+Example of cross-cdk-app-repo importing, i.e. sharing resource across CDK apps without painful `fromXxxxAttributes` and `CfnOutput`.
 
 This is a spike of idea described in https://github.com/aws/aws-cdk/issues/7721
 
-## Plan 1 - multiple CDK apps
+## Plan A - multiple CDK apps
 
 At the moment, infrastructure deployments works as expected. Service-A deployment throws error:
 
@@ -22,7 +22,7 @@ Error: Cannot reference across apps. Consuming and producing stacks must be defi
     at process.<anonymous> (./infrastructure/node_modules/@aws-cdk/core/lib/app.ts:121:45)
 ```
 
-## Plan 2 - CDK app injection
+## Plan B - CDK app injection
 
 One CDK app, multiple registers.
 Each individual repo has its own register. Register provisions one or more stacks.
@@ -37,12 +37,12 @@ Downsides:
 ----------
 
    The disadvantages above could be slightly mitigated by npm script, e.g. `"deploy": "npm install && cdk deploy TopicStack"`.
-   
+
 ----------
 
-3. ***The most unbearable disadvantage*** - when update infrastructure repo, because provider repo doesn't have informatin from consumer repos, it will remove features added by consumer repos. 
+3. ***The most unbearable disadvantage*** - when update infrastructure repo, because provider repo doesn't have informatin from consumer repos, it will remove features added by consumer repos.
 
-    For instant, security group where was mutated by consumer repos will get undesirable RESET when provider repo re-deploys 😑
+    For instance, security group where was mutated by consumer repos will get undesirable RESET when provider repo re-deploys 😑
 
 ```log
     Security Group Changes

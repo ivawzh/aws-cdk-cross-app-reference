@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as cdk from '@aws-cdk/core';
 import { TopicStack } from './topic-stack';
-import { buildApp as buildInfrastructureApp } from 'infrastructure/lib/app'
+import { buildApp as buildInfrastructureApp } from 'infrastructure'
 import { SqsStack } from 'infrastructure/lib/sqs-stack'
 
 export function buildApp(): cdk.App {

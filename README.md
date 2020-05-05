@@ -31,7 +31,27 @@ All deployments work 🤟
 
 Downsides:
 
-1. service repo can deploy stack from infrastructure repo, e.g. `cdk deploy SqsStack` while I am at service repo. Cannot use `  Tag.add(app, 'project', projectName); Tag.add(app, 'app', appName)` in consumer stacks, because that will apply the tag name to all shared infra stacks.
+1. service repo can deploy stack from infrastructure repo, e.g. `cdk deploy SqsStack` while I am at service repo. Cannot use `  Tag.add(app, 'project', projectName); Tag.add(app, 'app', appName)` in consumer stacks, because that will apply the tags to all shared infra stacks.
 2. have to publish provider and re-npm-install at consumer to keep things up-to-date.
 
-These downsides could be slightly mitigated by npm script, e.g. `"deploy": "npm install && cdk deploy TopicStack"`.
+----------
+
+   The disadvantages above could be slightly mitigated by npm script, e.g. `"deploy": "npm install && cdk deploy TopicStack"`.
+   
+----------
+
+3. **The unbearable disadvantage** - when update infrastructure repo, because provider repo doesn't have informatin from consumer repos, it will remove features added by consumer repos. 
+
+Example, security group mutated by consumer repos will get RESET when provider repo re-deploy 😑
+
+```log
+Security Group Changes
+┌───┬────────────────────────────────────────┬─────┬─────────────┬────────────────────┐
+│   │ Group                                  │ Dir │ Protocol    │ Peer               │
+├───┼────────────────────────────────────────┼─────┼─────────────┼────────────────────┤
+│ - │ ${PublicRootALB/SecurityGroup.GroupId} │ In  │ TCP 80      │ Everyone (IPv4)    │
+│ - │ ${PublicRootALB/SecurityGroup.GroupId} │ In  │ TCP 443     │ Everyone (IPv4)    │
+├───┼────────────────────────────────────────┼─────┼─────────────┼────────────────────┤
+│ + │ ${PublicRootALB/SecurityGroup.GroupId} │ Out │ ICMP 252-86 │ 255.255.255.255/32 │
+└───┴────────────────────────────────────────┴─────┴─────────────┴────────────────────┘
+```
